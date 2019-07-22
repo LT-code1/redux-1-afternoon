@@ -1,24 +1,39 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import store, { ADD_INGREDIENT, CLEAR_INGREDIENT } from "./../../store";
 
 class Ingredients extends Component {
   constructor(props) {
     super(props);
+    const reduxState = store.getState();
     this.state = {
-      ingredients: [],
+      ingredients: reduxState.ingredients,
       input: ""
     };
+  }
+  componentDidMount() {
+    store.subscribe(() => {
+      const reduxState = store.getState();
+      this.setState({
+        ingredients: reduxState.ingredients
+      });
+    });
+    store.dispatch({type: CLEAR_INGREDIENT,payload :[]})                           //setState of
   }
   handleChange(val) {
     this.setState({
       input: val
     });
   }
+ 
   addIngredient() {
-    // Send data to Redux state
-    this.setState({
-      input: ""
+    store.dispatch({           ///action type:typename,payload:data sent to store
+      type: ADD_INGREDIENT,
+      payload: this.state.input
     });
+    this.setState({            //after sending inputted ingredient to store reset input field
+      input: ""
+    }); 
   }
   render() {
     const ingredients = this.state.ingredients.map((ingredient, i) => {
